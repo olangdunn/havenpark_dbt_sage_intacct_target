@@ -1,0 +1,6 @@
+dbtVersion: 0.20.0
+jobs:
+	name: daily
+	schedule: 0 17 * * *
+	steps:
+		command: dbt run
