@@ -1,6 +1,7 @@
 dbtVersion: 0.20.0
 jobs:
-	name: daily
-	schedule: 0 17 * * *
+- name: daily
+	schedule: 0 14 * * *
 	steps:
-		command: dbt run
+		- name: run models
+			command: dbt run
