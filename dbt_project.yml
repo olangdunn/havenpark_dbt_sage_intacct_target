@@ -5,8 +5,7 @@ require-dbt-version: [">=1.3.0", "<2.0.0"]
 models:
   sage_intacct:
     +materialized: table
-    +database: datalake
-    +schema: testing
+    +schema: sage_intacct
     intermediate:
       +materialized: view
 vars:
