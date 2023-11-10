@@ -6,6 +6,8 @@ with general_ledger_balances as (
 
 final as (
     select 
+        location_id,
+        location_name,
         account_no,
         account_title,
         book_id,
