@@ -111,8 +111,8 @@ gl_beginning_balance as (
 
 gl_patch as (
     select 
-        coalesce(gl_beginning_balance.location_id, gl_accounting_periods.location_id) as account_no,
-        coalesce(gl_beginning_balance.location_name, gl_accounting_periods.location_name) as account_title,
+        coalesce(gl_beginning_balance.location_id, gl_accounting_periods.location_id) as location_id,
+        coalesce(gl_beginning_balance.location_name, gl_accounting_periods.location_name) as location_name,
         coalesce(gl_beginning_balance.account_no, gl_accounting_periods.account_no) as account_no,
         coalesce(gl_beginning_balance.account_title, gl_accounting_periods.account_title) as account_title,
         coalesce(gl_beginning_balance.book_id, gl_accounting_periods.book_id) as book_id,
