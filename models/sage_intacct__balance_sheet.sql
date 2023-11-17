@@ -11,7 +11,9 @@ retained_earnings as (
 
 combine_retained_earnings as (
     select 
-        period_first_day, 
+        period_first_day,
+        location_id,
+        location_name,
         account_no,
         account_title,
         account_type,
@@ -32,6 +34,8 @@ combine_retained_earnings as (
 final as (
     select 
         cast ({{ dbt.date_trunc("month", "period_first_day") }} as date) as period_date, 
+        location_id,
+        location_name,
         account_no,
         account_title,
         account_type,

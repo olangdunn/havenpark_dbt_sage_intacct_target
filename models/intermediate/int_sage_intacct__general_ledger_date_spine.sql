@@ -66,6 +66,8 @@ date_spine as (
 
 final as (
     select distinct
+        general_ledger.location_id,
+        general_ledger.location_name,
         general_ledger.account_no,
         general_ledger.account_title,
         general_ledger.account_type,

@@ -11,6 +11,8 @@ gl_accounting_periods as (
 
 gl_period_balances_is as (
     select 
+        location_id,
+        location_name,
         account_no,
         account_title,
         book_id,
@@ -32,12 +34,14 @@ gl_period_balances_is as (
     from general_ledger
     where account_type = 'incomestatement'
     
-    {{ dbt_utils.group_by(10 + var('sage_account_pass_through_columns')|length) }}
+    {{ dbt_utils.group_by(12 + var('sage_account_pass_through_columns')|length) }}
 
 ), 
 
 gl_period_balances_bs as (
     select 
+        location_id,
+        location_name,
         account_no,
         account_title,
         book_id,
@@ -59,7 +63,7 @@ gl_period_balances_bs as (
     from general_ledger
     where account_type = 'balancesheet'
     
-    {{ dbt_utils.group_by(10 + var('sage_account_pass_through_columns')|length) }}
+    {{ dbt_utils.group_by(12 + var('sage_account_pass_through_columns')|length) }}
 
 ), 
 
@@ -78,14 +82,14 @@ gl_cumulative_balances as (
     select 
         *,
         case
-            when account_type = 'balancesheet' then sum(period_amount) over (partition by account_no, account_title, book_id, entry_state 
+            when account_type = 'balancesheet' then sum(period_amount) over (partition by location_id, location_name, account_no, account_title, book_id, entry_state 
                 {% if var('sage_account_pass_through_columns') %} 
                 , 
                 {{ var('sage_account_pass_through_columns') | join (", ")}}
 
                 {% endif %}
 
-                order by date_month, account_no rows unbounded preceding)
+                order by date_month, location_id, account_no rows unbounded preceding)
             else 0 
         end as cumulative_amount   
     from gl_period_balances
@@ -107,6 +111,8 @@ gl_beginning_balance as (
 
 gl_patch as (
     select 
+        coalesce(gl_beginning_balance.location_id, gl_accounting_periods.location_id) as location_id,
+        coalesce(gl_beginning_balance.location_name, gl_accounting_periods.location_name) as location_name,
         coalesce(gl_beginning_balance.account_no, gl_accounting_periods.account_no) as account_no,
         coalesce(gl_beginning_balance.account_title, gl_accounting_periods.account_title) as account_title,
         coalesce(gl_beginning_balance.book_id, gl_accounting_periods.book_id) as book_id,
@@ -140,7 +146,9 @@ gl_patch as (
     from gl_accounting_periods
 
     left join gl_beginning_balance
-        on gl_beginning_balance.account_no = gl_accounting_periods.account_no
+        on gl_beginning_balance.location_id = gl_accounting_periods.location_id
+            and gl_beginning_balance.location_name = gl_accounting_periods.location_name
+            and gl_beginning_balance.account_no = gl_accounting_periods.account_no
             and gl_beginning_balance.account_title = gl_accounting_periods.account_title
             and gl_beginning_balance.date_month = gl_accounting_periods.period_first_day
             and gl_beginning_balance.book_id = gl_accounting_periods.book_id
@@ -151,13 +159,15 @@ gl_patch as (
 gl_value_partition as (
     select
         *,
-        sum(case when period_ending_amount_starter is null then 0 else 1 end) over (order by account_no, account_title, book_id, entry_state, period_last_day rows unbounded preceding) as gl_partition
+        sum(case when period_ending_amount_starter is null then 0 else 1 end) over (order by location_id, location_name, account_no, account_title, book_id, entry_state, period_last_day rows unbounded preceding) as gl_partition
     from gl_patch
 
 ), 
 
 final as (
     select
+        location_id,
+        location_name,
         account_no,
         account_title,
         book_id,
