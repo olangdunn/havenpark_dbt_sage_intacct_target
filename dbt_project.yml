@@ -5,12 +5,12 @@ require-dbt-version: [">=1.3.0", "<2.0.0"]
 models:
   sage_intacct:
     +materialized: table
-    +schema: sage_intacct
+    +schema: sage
     intermediate:
       +materialized: view
 vars:
-  sage_intacct_database: HAVENPARK
-  sage_intacct_schema: SAGE
+  sage_intacct_database: havenpark
+  sage_intacct_schema: sage
   sage_account_pass_through_columns: []
   sage_gl_pass_through_columns: []
   sage_intacct:
