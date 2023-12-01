@@ -9,6 +9,8 @@ models:
     intermediate:
       +materialized: view
 vars:
+  sage_intacct_database: HAVENPARK
+  sage_intacct_schema: SAGE
   sage_account_pass_through_columns: []
   sage_gl_pass_through_columns: []
   sage_intacct:
