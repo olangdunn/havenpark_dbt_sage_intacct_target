@@ -8,6 +8,8 @@ models:
     +schema: sage
     intermediate:
       +materialized: view
+  sage_intacct_source:
+    +schema: sage_staging
 vars:
   sage_intacct_database: havenpark
   sage_intacct_schema: sage
